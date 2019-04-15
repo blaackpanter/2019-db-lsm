@@ -32,7 +32,6 @@ public final class DAOFactory {
     private DAOFactory() {
         // Not instantiatable
     }
-
     /**
      * Construct a {@link DAO} instance.
      *
@@ -53,8 +52,6 @@ public final class DAOFactory {
             throw new IllegalArgumentException("Path is not a directory: " + data);
         }
 
-        // TODO: Implement me
-        //throw new UnsupportedOperationException("Implement me!");
         return new MyDAO();
     }
 }
