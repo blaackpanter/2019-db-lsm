@@ -17,7 +17,6 @@ public class MyDAO implements DAO {
         return base.tailMap(from).values().iterator();
     }
 
-
     @Override
     public void upsert(@NotNull final ByteBuffer key, @NotNull final ByteBuffer value) throws IOException {
         base.put(key, Record.of(key, value));
@@ -33,6 +32,3 @@ public class MyDAO implements DAO {
         //do nothing
     }
 }
-
-
-
