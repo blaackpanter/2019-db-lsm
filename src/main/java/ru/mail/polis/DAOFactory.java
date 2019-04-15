@@ -54,6 +54,7 @@ public final class DAOFactory {
         }
 
         // TODO: Implement me
-        throw new UnsupportedOperationException("Implement me!");
+        //throw new UnsupportedOperationException("Implement me!");
+        return new MyDAO();
     }
 }
