@@ -32,6 +32,7 @@ public final class DAOFactory {
     private DAOFactory() {
         // Not instantiatable
     }
+
     /**
      * Construct a {@link DAO} instance.
      *
