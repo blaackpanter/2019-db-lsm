@@ -22,6 +22,11 @@ public final class Value implements Comparable<Value> {
         return new Value(System.currentTimeMillis(), null);
     }
 
+    /***
+     * Return ByteBuffer.
+     *
+     * @return data
+     */
     @NotNull
     public ByteBuffer getData() {
         if (data == null) {
@@ -35,7 +40,7 @@ public final class Value implements Comparable<Value> {
     }
 
     @Override
-    public int compareTo(Value o) {
+    public int compareTo(@NotNull final Value o) {
         return -Long.compare(timestamp, o.timestamp);
     }
 

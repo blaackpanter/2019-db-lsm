@@ -18,7 +18,13 @@ public class FileTable implements Table {
     private final int rows;
     private final LongBuffer offsets;
 
-    public FileTable(final File file) throws IOException {
+    /***
+     * Create an object for file on disk.
+     *
+     * @param file to get a table
+     * @throws IOException if an I/O error is thrown by a visitor method
+     */
+    public FileTable(@NotNull final File file) throws IOException {
         final long fileSize = file.length();
         final ByteBuffer mapped;
         try (FileChannel fc = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
@@ -43,7 +49,7 @@ public class FileTable implements Table {
         this.cells = cellBuffer.slice();
     }
 
-    static void write(final Iterator<Cell> cells, final File to) throws IOException {
+    static void write(@NotNull final Iterator<Cell> cells, @NotNull final File to) throws IOException {
         try (FileChannel fc = FileChannel.open(to.toPath(), StandardOpenOption.CREATE_NEW,
                 StandardOpenOption.WRITE)) {
             final List<Long> offsets = new ArrayList<>();
@@ -95,7 +101,7 @@ public class FileTable implements Table {
         }
     }
 
-    private ByteBuffer keyAt(final int i) {
+    private ByteBuffer keyAt(@NotNull final int i) {
         assert 0 <= i && i < rows;
         final long offset = offsets.get(i);
         assert offset <= Integer.MAX_VALUE;
@@ -106,7 +112,7 @@ public class FileTable implements Table {
         return key.slice();
     }
 
-    private Cell cellAt(final int i) {
+    private Cell cellAt(@NotNull final int i) {
         assert 0 <= i && i < rows;
         long offset = offsets.get(i);
         assert offset <= Integer.MAX_VALUE;
@@ -137,7 +143,7 @@ public class FileTable implements Table {
 
     }
 
-    private int position(final ByteBuffer from) {
+    private int position(@NotNull final ByteBuffer from) {
         int left = 0;
         int right = rows - 1;
         while (left <= right) {
@@ -156,7 +162,7 @@ public class FileTable implements Table {
 
     @NotNull
     @Override
-    public Iterator<Cell> iterator(@NotNull ByteBuffer from) throws IOException {
+    public Iterator<Cell> iterator(@NotNull final ByteBuffer from) throws IOException {
         return new Iterator<Cell>() {
             int next = position(from);
 
@@ -174,17 +180,17 @@ public class FileTable implements Table {
     }
 
     @Override
-    public void upsert(@NotNull ByteBuffer key, @NotNull ByteBuffer value) throws IOException {
-
+    public void upsert(@NotNull final ByteBuffer key, @NotNull final ByteBuffer value) throws IOException {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void remove(@NotNull ByteBuffer key) throws IOException {
-
+    public void remove(@NotNull final ByteBuffer key) throws IOException {
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public long sizeInBytes() throws IOException {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 }

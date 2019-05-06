@@ -9,7 +9,11 @@ import ru.mail.polis.Record;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.file.*;
+import java.nio.file.FileVisitResult;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,11 +26,18 @@ public final class LSMDao implements DAO {
     private Table memTable = new MemTable();
     private final File base;
     private int generation;
-    private long flushThreshold;
-    private Collection<FileTable> files;
+    private final long flushThreshold;
+    private final Collection<FileTable> files;
 
-    public LSMDao(final File base,
-                  final long flushThreshold) throws IOException {
+    /***
+     * LSM storage.
+     *
+     * @param base is root directory
+     * @param flushThreshold is max size of storage
+     * @throws IOException if an I/O error is thrown by a visitor method
+     */
+    public LSMDao(@NotNull final File base,
+                  @NotNull final long flushThreshold) throws IOException {
         this.base = base;
         assert flushThreshold >= 0L;
         this.flushThreshold = flushThreshold;
@@ -43,7 +54,7 @@ public final class LSMDao implements DAO {
 
     @NotNull
     @Override
-    public Iterator<Record> iterator(@NotNull ByteBuffer from) throws IOException, NoSuchElementException {
+    public Iterator<Record> iterator(@NotNull final ByteBuffer from) throws IOException, NoSuchElementException {
 
         final ArrayList<Iterator<Cell>> filesIterators = new ArrayList<>();
 
@@ -59,7 +70,7 @@ public final class LSMDao implements DAO {
     }
 
     @Override
-    public void upsert(@NotNull ByteBuffer key, @NotNull ByteBuffer value) throws IOException {
+    public void upsert(@NotNull final ByteBuffer key, @NotNull final ByteBuffer value) throws IOException {
         memTable.upsert(key, value);
         if (memTable.sizeInBytes() > flushThreshold) {
             flush();
@@ -78,7 +89,7 @@ public final class LSMDao implements DAO {
     }
 
     @Override
-    public void remove(@NotNull ByteBuffer key) throws IOException {
+    public void remove(@NotNull final ByteBuffer key) throws IOException {
         memTable.remove(key);
         if (memTable.sizeInBytes() > flushThreshold) {
             flush();
