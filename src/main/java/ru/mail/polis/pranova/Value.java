@@ -3,10 +3,12 @@ package ru.mail.polis.pranova;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public final class Value implements Comparable<Value> {
     private final long timestamp;
     private final ByteBuffer data;
+    private final static AtomicInteger clock = new AtomicInteger();
 
     Value(final long timestamp, final ByteBuffer data) {
         assert timestamp >= 0;
@@ -15,7 +17,7 @@ public final class Value implements Comparable<Value> {
     }
 
     public static Value of(final ByteBuffer data) {
-        return new Value(System.currentTimeMillis(), data.duplicate());
+        return new Value(System.currentTimeMillis() * 1_000_000 + clock.incrementAndGet(), data.duplicate());
     }
 
     public static Value tombstone() {
