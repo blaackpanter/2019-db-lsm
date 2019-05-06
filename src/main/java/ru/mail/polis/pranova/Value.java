@@ -6,9 +6,9 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class Value implements Comparable<Value> {
+    private final static AtomicInteger clock = new AtomicInteger();
     private final long timestamp;
     private final ByteBuffer data;
-    private final static AtomicInteger clock = new AtomicInteger();
 
     Value(final long timestamp, final ByteBuffer data) {
         assert timestamp >= 0;
