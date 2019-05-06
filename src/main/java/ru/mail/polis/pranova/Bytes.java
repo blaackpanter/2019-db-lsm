@@ -8,7 +8,7 @@ public final class Bytes {
 
     }
 
-    /***
+    /**
      * Return ByteBuffer from int value.
      *
      * @param value for ByteBuffer
@@ -21,7 +21,7 @@ public final class Bytes {
         return result;
     }
 
-    /***
+    /**
      * Return ByteBuffer from long value.
      *
      * @param value for ByteBuffer

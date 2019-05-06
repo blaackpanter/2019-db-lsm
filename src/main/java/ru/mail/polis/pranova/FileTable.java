@@ -18,7 +18,7 @@ public class FileTable implements Table {
     private final int rows;
     private final LongBuffer offsets;
 
-    /***
+    /**
      * Create an object for file on disk.
      *
      * @param file to get a table

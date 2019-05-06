@@ -29,7 +29,7 @@ public final class LSMDao implements DAO {
     private final long flushThreshold;
     private final Collection<FileTable> files;
 
-    /***
+    /**
      * LSM storage.
      *
      * @param base is root directory

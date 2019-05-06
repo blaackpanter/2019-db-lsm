@@ -22,7 +22,7 @@ public final class Value implements Comparable<Value> {
         return new Value(System.currentTimeMillis(), null);
     }
 
-    /***
+    /**
      * Return ByteBuffer.
      *
      * @return data
