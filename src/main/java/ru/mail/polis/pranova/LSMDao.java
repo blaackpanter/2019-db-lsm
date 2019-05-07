@@ -26,6 +26,7 @@ import java.util.List;
 public final class LSMDao implements DAO {
     private static final String SUFFIX = ".dat";
     private static final String TEMP = ".tmp";
+    private static final String PREFIX = "PRL";
     private Table memTable = new MemTable();
     private final File base;
     private int generation;
@@ -50,7 +51,8 @@ public final class LSMDao implements DAO {
         Files.walkFileTree(base.toPath(), options, maxDeep, new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult visitFile(final Path path, final BasicFileAttributes attrs) throws IOException {
-                if (path.getFileName().toString().endsWith(SUFFIX)) {
+                if (path.getFileName().toString().endsWith(SUFFIX)
+                        && path.getFileName().toString().startsWith(PREFIX)) {
                     files.add(new FileTable(path.toFile()));
                 }
                 return FileVisitResult.CONTINUE;
@@ -84,9 +86,9 @@ public final class LSMDao implements DAO {
     }
 
     private void flush() throws IOException {
-        final File tmp = new File(base, generation + TEMP);
+        final File tmp = new File(base, PREFIX + generation + TEMP);
         FileTable.write(memTable.iterator(ByteBuffer.allocate(0)), tmp);
-        final File dest = new File(base, generation + SUFFIX);
+        final File dest = new File(base, PREFIX + generation + SUFFIX);
         Files.move(tmp.toPath(), dest.toPath(), StandardCopyOption.ATOMIC_MOVE);
         files.add(new FileTable(dest));
         generation++;
