@@ -9,16 +9,9 @@ import ru.mail.polis.Record;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.file.FileVisitResult;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 
 public final class LSMDao implements DAO {
@@ -43,7 +36,9 @@ public final class LSMDao implements DAO {
         assert flushThreshold >= 0L;
         this.flushThreshold = flushThreshold;
         files = new ArrayList<>();
-        Files.walkFileTree(base.toPath(), new SimpleFileVisitor<>() {
+        final EnumSet<FileVisitOption> options = EnumSet.of(FileVisitOption.FOLLOW_LINKS);
+        final int maxDeep = 1;
+        Files.walkFileTree(base.toPath(), options, maxDeep, new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult visitFile(final Path path, final BasicFileAttributes attrs) throws IOException {
                 if (path.getFileName().toString().endsWith(SUFFIX)) {
