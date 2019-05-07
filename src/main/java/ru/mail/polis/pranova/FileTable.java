@@ -88,7 +88,8 @@ public class FileTable implements Table {
         }
     }
 
-    private static long writeBuffer(@NotNull final FileChannel fc, @NotNull final ByteBuffer buffer) throws IOException {
+    private static long writeBuffer(@NotNull final FileChannel fc,
+                                    @NotNull final ByteBuffer buffer) throws IOException {
         final int valueSize = buffer.remaining();
         fc.write(Bytes.fromInt(valueSize));
         int offset = Integer.BYTES;
