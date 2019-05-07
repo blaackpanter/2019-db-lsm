@@ -3,9 +3,7 @@ package ru.mail.polis.pranova;
 import java.nio.ByteBuffer;
 
 public final class Bytes {
-
     private Bytes() {
-
     }
 
     /**

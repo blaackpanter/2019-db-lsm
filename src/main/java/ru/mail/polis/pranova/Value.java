@@ -5,6 +5,8 @@ import org.jetbrains.annotations.NotNull;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static ru.mail.polis.pranova.Time.currentTime;
+
 public final class Value implements Comparable<Value> {
     private static final AtomicInteger clock = new AtomicInteger();
     private final long timestamp;
@@ -17,17 +19,17 @@ public final class Value implements Comparable<Value> {
     }
 
     public static Value of(final ByteBuffer data) {
-        return new Value(System.currentTimeMillis() * 1_000_000 + clock.incrementAndGet(), data.duplicate());
+        return new Value(currentTime(), data.duplicate());
     }
 
     public static Value tombstone() {
-        return new Value(System.currentTimeMillis(), null);
+        return new Value(currentTime(), null);
     }
 
     /**
-     * Return ByteBuffer.
+     * Method for get data otherwise get exception.
      *
-     * @return data
+     * @return data from ByteBuffer
      */
     @NotNull
     public ByteBuffer getData() {

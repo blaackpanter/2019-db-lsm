@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.nio.ByteBuffer;
 import java.util.Comparator;
 
-public class Cell {
+public final class Cell {
     public static final Comparator<Cell> COMPARATOR =
             Comparator.comparing(Cell::getKey).thenComparing(Cell::getValue);
 
@@ -28,5 +28,4 @@ public class Cell {
     public Value getValue() {
         return value;
     }
-
 }

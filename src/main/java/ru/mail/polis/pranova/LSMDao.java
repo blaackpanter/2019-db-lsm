@@ -15,10 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 public final class LSMDao implements DAO {
     private static final String SUFFIX = ".dat";
@@ -32,7 +29,7 @@ public final class LSMDao implements DAO {
     /**
      * LSM storage.
      *
-     * @param base is root directory
+     * @param base           is root directory
      * @param flushThreshold is max size of storage
      * @throws IOException if an I/O error is thrown by a visitor method
      */
@@ -45,18 +42,19 @@ public final class LSMDao implements DAO {
         Files.walkFileTree(base.toPath(), new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult visitFile(final Path path, final BasicFileAttributes attrs) throws IOException {
-                files.add(new FileTable(path.toFile()));
+                if (path.getFileName().toString().endsWith(SUFFIX)) {
+                    files.add(new FileTable(path.toFile()));
+                }
                 return FileVisitResult.CONTINUE;
             }
         });
-
+        generation = files.size() + 1;
     }
 
     @NotNull
     @Override
     public Iterator<Record> iterator(@NotNull final ByteBuffer from) throws IOException, NoSuchElementException {
-
-        final ArrayList<Iterator<Cell>> filesIterators = new ArrayList<>();
+        final List<Iterator<Cell>> filesIterators = new ArrayList<>();
 
         for (final FileTable fileTable : files) {
             filesIterators.add(fileTable.iterator(from));
@@ -85,7 +83,6 @@ public final class LSMDao implements DAO {
         files.add(new FileTable(dest));
         generation++;
         memTable = new MemTable();
-
     }
 
     @Override
@@ -98,6 +95,8 @@ public final class LSMDao implements DAO {
 
     @Override
     public void close() throws IOException {
-        flush();
+        if (memTable.sizeInBytes() != 0) {
+            flush();
+        }
     }
 }
