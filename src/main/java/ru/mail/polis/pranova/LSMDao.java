@@ -15,7 +15,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
 
 public final class LSMDao implements DAO {
     private static final String SUFFIX = ".dat";
@@ -53,7 +57,7 @@ public final class LSMDao implements DAO {
 
     @NotNull
     @Override
-    public Iterator<Record> iterator(@NotNull final ByteBuffer from) throws IOException, NoSuchElementException {
+    public Iterator<Record> iterator(@NotNull final ByteBuffer from) throws IOException {
         final List<Iterator<Cell>> filesIterators = new ArrayList<>();
 
         for (final FileTable fileTable : files) {

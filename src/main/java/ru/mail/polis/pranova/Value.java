@@ -8,7 +8,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static ru.mail.polis.pranova.Time.currentTime;
 
 public final class Value implements Comparable<Value> {
-    private static final AtomicInteger clock = new AtomicInteger();
     private final long timestamp;
     private final ByteBuffer data;
 

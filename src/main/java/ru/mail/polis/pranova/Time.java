@@ -7,6 +7,11 @@ public final class Time {
     private Time() {
     }
 
+    /**
+     * Method for return current time in nano seconds.
+     *
+     * @return time
+     */
     public static long currentTime() {
         synchronized (Time.class) {
             final var time = System.currentTimeMillis();
