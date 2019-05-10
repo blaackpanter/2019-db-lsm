@@ -17,6 +17,7 @@ public class FileTable implements Table {
     private final ByteBuffer cells;
     private final int rows;
     private final LongBuffer offsets;
+    private final File file;
 
     /**
      * Create an object for file on disk.
@@ -25,6 +26,7 @@ public class FileTable implements Table {
      * @throws IOException if an I/O error is thrown by a visitor method
      */
     public FileTable(@NotNull final File file) throws IOException {
+        this.file = file;
         final long fileSize = file.length();
         final ByteBuffer mapped;
         try (FileChannel fc = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
@@ -186,5 +188,9 @@ public class FileTable implements Table {
     @Override
     public long sizeInBytes() throws IOException {
         throw new UnsupportedOperationException();
+    }
+
+    public void deleteFileTable() {
+        file.delete();
     }
 }

@@ -21,9 +21,9 @@ public final class Bytes {
 
     /**
      * Return ByteBuffer from long value.
-     *
-     * @param value for ByteBuffer
-     * @return ByteBuffer
+     *      *
+     *      * @param value for ByteBuffer
+     *      * @return ByteBuffer
      */
     public static ByteBuffer fromLong(final long value) {
         final ByteBuffer result = ByteBuffer.allocate(Long.BYTES);

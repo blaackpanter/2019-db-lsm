@@ -71,10 +71,38 @@ public final class LSMDao implements DAO {
         }
 
         filesIterators.add(memTable.iterator(from));
-        final Iterator<Cell> mergedCells = Iterators.mergeSorted(filesIterators, Cell.COMPARATOR);
+        final Iterator<Cell> alive = getCellsIterator(filesIterators);
+        return Iterators.transform(alive, cell -> Record.of(cell.getKey(), cell.getValue().getData()));
+    }
+
+    @Override
+    public void compact() throws IOException {
+        final List<Iterator<Cell>> filesIterators = new ArrayList<>();
+
+        for (final FileTable fileTable : files) {
+            filesIterators.add(fileTable.iterator(ByteBuffer.allocate(0)));
+        }
+
+        final Iterator<Cell> alive = getCellsIterator(filesIterators);
+        final File tmp = new File(base, PREFIX + 1 + TEMP);
+        FileTable.write(alive, tmp);
+
+        for (final FileTable fileTable : files) {
+            fileTable.deleteFileTable();
+        }
+
+        files.clear();
+        final File dest = new File(base, PREFIX + generation + SUFFIX);
+        Files.move(tmp.toPath(), dest.toPath(), StandardCopyOption.ATOMIC_MOVE);
+        files.add(new FileTable(dest));
+        generation = files.size() + 1;
+    }
+
+    private Iterator<Cell> getCellsIterator(List<Iterator<Cell>> iterators) {
+        final Iterator<Cell> mergedCells = Iterators.mergeSorted(iterators, Cell.COMPARATOR);
         final Iterator<Cell> cells = Iters.collapseEquals(mergedCells, Cell::getKey);
         final Iterator<Cell> alive = Iterators.filter(cells, cell -> !cell.getValue().isRemoved());
-        return Iterators.transform(alive, cell -> Record.of(cell.getKey(), cell.getValue().getData()));
+        return alive;
     }
 
     @Override
