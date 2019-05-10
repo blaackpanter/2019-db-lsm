@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.LongBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -190,7 +191,7 @@ public class FileTable implements Table {
         throw new UnsupportedOperationException();
     }
 
-    public void deleteFileTable() {
-        file.delete();
+    public void deleteFileTable() throws IOException {
+        Files.delete(file.toPath());
     }
 }

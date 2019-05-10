@@ -98,11 +98,10 @@ public final class LSMDao implements DAO {
         generation = files.size() + 1;
     }
 
-    private Iterator<Cell> getCellsIterator(List<Iterator<Cell>> iterators) {
+    private Iterator<Cell> getCellsIterator(@NotNull final List<Iterator<Cell>> iterators) {
         final Iterator<Cell> mergedCells = Iterators.mergeSorted(iterators, Cell.COMPARATOR);
         final Iterator<Cell> cells = Iters.collapseEquals(mergedCells, Cell::getKey);
-        final Iterator<Cell> alive = Iterators.filter(cells, cell -> !cell.getValue().isRemoved());
-        return alive;
+        return Iterators.filter(cells, cell -> !cell.getValue().isRemoved());
     }
 
     @Override
