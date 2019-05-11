@@ -92,7 +92,7 @@ public final class LSMDao implements DAO {
         }
 
         files.clear();
-        final File dest = new File(base, PREFIX + generation + SUFFIX);
+        final File dest = new File(base, PREFIX + 1 + SUFFIX);
         Files.move(tmp.toPath(), dest.toPath(), StandardCopyOption.ATOMIC_MOVE);
         files.add(new FileTable(dest));
         generation = files.size() + 1;
