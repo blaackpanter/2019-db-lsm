@@ -22,7 +22,6 @@ import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 
-
 public final class LSMDao implements DAO {
     private static final String SUFFIX = ".dat";
     private static final String TEMP = ".tmp";

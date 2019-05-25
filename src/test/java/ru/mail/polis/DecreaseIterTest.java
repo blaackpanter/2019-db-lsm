@@ -1,5 +1,6 @@
 package ru.mail.polis;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -9,7 +10,6 @@ import java.nio.ByteBuffer;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 
 public class DecreaseIterTest extends TestBase {
     @Test
@@ -54,13 +54,19 @@ public class DecreaseIterTest extends TestBase {
                     map.entrySet()) {
                 dao.upsert(entry.getKey(), entry.getValue());
             }
-            final Iterator<Record> iterator = dao.decreasingIterator(key);
-            for (Map.Entry<ByteBuffer, ByteBuffer> entry :
-                    map.headMap(key, true).descendingMap().entrySet()) {
-                final Record record = iterator.next();
-                assertEquals(entry.getKey(), record.getKey());
-                assertEquals(entry.getValue(), record.getValue());
-            }
+            checkCorrect(dao, map, key);
+        }
+    }
+
+    private void checkCorrect(@NotNull final DAO dao,
+                              @NotNull final NavigableMap<ByteBuffer, ByteBuffer> map,
+                              @NotNull final ByteBuffer from) throws IOException {
+        final Iterator<Record> iterator = dao.decreasingIterator(from);
+        for (Map.Entry<ByteBuffer, ByteBuffer> entry :
+                map.headMap(from, true).descendingMap().entrySet()) {
+            final Record record = iterator.next();
+            assertEquals(entry.getKey(), record.getKey());
+            assertEquals(entry.getValue(), record.getValue());
         }
     }
 
@@ -76,14 +82,62 @@ public class DecreaseIterTest extends TestBase {
                     map.entrySet()) {
                 dao.upsert(entry.getKey(), entry.getValue());
             }
+            checkCorrect(dao, map, map.lastKey());
+        }
+    }
 
-            Iterator<Record> iterator = dao.decreasingIterator(map.lastKey());
+    @Test
+    public void iteratorAfterFlush(@TempDir File data) throws IOException {
+        NavigableMap<ByteBuffer, ByteBuffer> map = new TreeMap<>();
+        int n = 100;
+        for (int i = 0; i < n; i++) {
+            map.put(randomKey(), randomValue());
+        }
+
+        try (DAO dao = DAOFactory.create(data)) {
             for (Map.Entry<ByteBuffer, ByteBuffer> entry :
-                    map.descendingMap().entrySet()) {
-                final Record record = iterator.next();
-                assertEquals(entry.getKey(), record.getKey());
-                assertEquals(entry.getValue(), record.getValue());
+                    map.entrySet()) {
+                dao.upsert(entry.getKey(), entry.getValue());
             }
+        }
+
+        try (DAO dao = DAOFactory.create(data)) {
+            checkCorrect(dao, map, map.lastKey());
+        }
+    }
+
+    @Test
+    public void iteratorAfterCompaction(@TempDir File data) throws IOException {
+        NavigableMap<ByteBuffer, ByteBuffer> map = new TreeMap<>();
+        int n = 100;
+        for (int i = 0; i < n; i++) {
+            map.put(randomKey(), randomValue());
+        }
+
+        try (DAO dao = DAOFactory.create(data)) {
+            for (Map.Entry<ByteBuffer, ByteBuffer> entry :
+                    map.entrySet()) {
+                dao.upsert(entry.getKey(), entry.getValue());
+            }
+        }
+
+        for (int i = 0; i < n; i++) {
+            map.put(randomKey(), randomValue());
+        }
+
+        try (DAO dao = DAOFactory.create(data)) {
+            for (Map.Entry<ByteBuffer, ByteBuffer> entry :
+                    map.entrySet()) {
+                dao.upsert(entry.getKey(), entry.getValue());
+            }
+        }
+
+        try (DAO dao = DAOFactory.create(data)) {
+            dao.compact();
+        }
+
+        try (DAO dao = DAOFactory.create(data)) {
+            checkCorrect(dao, map, map.lastKey());
         }
     }
 }

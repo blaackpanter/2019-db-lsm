@@ -202,13 +202,13 @@ public class FileTable implements Table {
 
             @Override
             public boolean hasNext() {
-                return next < rows;
+                return next >= 0;
             }
 
             @Override
             public Cell next() {
                 assert hasNext();
-                return cellAt(next++);
+                return cellAt(next--);
             }
         };
     }
