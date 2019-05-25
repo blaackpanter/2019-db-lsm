@@ -213,7 +213,7 @@ public class FileTable implements Table {
         };
     }
 
-    enum Order {
+    public enum Order {
         DIRECT,
         REVERSE
     }

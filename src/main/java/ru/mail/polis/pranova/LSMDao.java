@@ -64,15 +64,7 @@ public final class LSMDao implements DAO {
     @NotNull
     @Override
     public Iterator<Record> iterator(@NotNull final ByteBuffer from) throws IOException {
-        final List<Iterator<Cell>> filesIterators = new ArrayList<>();
-
-        for (final FileTable fileTable : files) {
-            filesIterators.add(fileTable.iterator(from));
-        }
-
-        filesIterators.add(memTable.iterator(from));
-        final Iterator<Cell> alive = getCellsIterator(filesIterators);
-        return Iterators.transform(alive, cell -> Record.of(cell.getKey(), cell.getValue().getData()));
+        return getIterator(from, FileTable.Order.DIRECT);
     }
 
     @Override
@@ -139,14 +131,24 @@ public final class LSMDao implements DAO {
 
     @Override
     public Iterator<Record> decreasingIterator(@NotNull final ByteBuffer from) throws IOException {
-        final List<Iterator<Cell>> iterators = new ArrayList<>();
+        return getIterator(from, FileTable.Order.REVERSE);
+    }
+
+    private Iterator<Record> getIterator(@NotNull final ByteBuffer from,
+                                         @NotNull final FileTable.Order order)
+            throws IOException {
+        final List<Iterator<Cell>> filesIterators = new ArrayList<>();
 
         for (final FileTable fileTable : files) {
-            iterators.add(fileTable.decreasingIterator(from));
+            filesIterators.add(order == FileTable.Order.DIRECT ?
+                    fileTable.iterator(from) :
+                    fileTable.decreasingIterator(from));
         }
 
-        iterators.add(memTable.decreasingIterator(from));
-        final Iterator<Cell> alive = getCellsIterator(iterators);
+        filesIterators.add(order == FileTable.Order.DIRECT ?
+                memTable.iterator(from) :
+                memTable.decreasingIterator(from));
+        final Iterator<Cell> alive = getCellsIterator(filesIterators);
         return Iterators.transform(alive, cell -> Record.of(cell.getKey(), cell.getValue().getData()));
     }
 }
