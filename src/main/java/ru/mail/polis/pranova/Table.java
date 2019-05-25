@@ -17,4 +17,8 @@ public interface Table {
     void remove(@NotNull final ByteBuffer key) throws IOException;
 
     long sizeInBytes() throws IOException;
+
+    default Iterator<Cell> decreasingIterator(@NotNull final ByteBuffer from) throws IOException {
+        throw new UnsupportedOperationException("Implement me when you get to stage 4");
+    }
 }

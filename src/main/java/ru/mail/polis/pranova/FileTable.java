@@ -140,7 +140,7 @@ public class FileTable implements Table {
         }
     }
 
-    private int position(@NotNull final ByteBuffer from) {
+    private int position(@NotNull final ByteBuffer from, @NotNull final Order order) {
         int left = 0;
         int right = rows - 1;
         while (left <= right) {
@@ -154,14 +154,14 @@ public class FileTable implements Table {
                 return mid;
             }
         }
-        return left;
+        return order == Order.direct ? left : right;
     }
 
     @NotNull
     @Override
     public Iterator<Cell> iterator(@NotNull final ByteBuffer from) throws IOException {
         return new Iterator<Cell>() {
-            int next = position(from);
+            int next = position(from, Order.direct);
 
             @Override
             public boolean hasNext() {
@@ -193,5 +193,28 @@ public class FileTable implements Table {
 
     public void deleteFileTable() throws IOException {
         Files.delete(file.toPath());
+    }
+
+    @Override
+    public Iterator<Cell> decreasingIterator(@NotNull final ByteBuffer from) throws IOException {
+        return new Iterator<Cell>() {
+            int next = position(from, Order.reverse);
+
+            @Override
+            public boolean hasNext() {
+                return next < rows;
+            }
+
+            @Override
+            public Cell next() {
+                assert hasNext();
+                return cellAt(next++);
+            }
+        };
+    }
+
+    enum Order {
+        direct,
+        reverse
     }
 }

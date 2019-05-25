@@ -5,12 +5,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Iterator;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 public class MemTable implements Table {
-    private final SortedMap<ByteBuffer, Value> map = new TreeMap<>();
+    private final NavigableMap<ByteBuffer, Value> map = new TreeMap<>();
     private long sizeInBytes;
 
     @Override
@@ -46,5 +44,12 @@ public class MemTable implements Table {
         } else if (!previous.isRemoved()) {
             sizeInBytes -= previous.getData().remaining();
         }
+    }
+
+    @Override
+    public Iterator<Cell> decreasingIterator(@NotNull final ByteBuffer from) throws IOException {
+        return Iterators.transform(
+                map.headMap(from, true).descendingMap().entrySet().iterator(),
+                e -> new Cell(e.getKey(), e.getValue()));
     }
 }
