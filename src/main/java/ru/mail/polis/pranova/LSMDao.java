@@ -139,14 +139,14 @@ public final class LSMDao implements DAO {
 
     @Override
     public Iterator<Record> decreasingIterator(@NotNull final ByteBuffer from) throws IOException {
-        final List<Iterator<Cell>> filesIterators = new ArrayList<>();
+        final List<Iterator<Cell>> iterators = new ArrayList<>();
 
         for (final FileTable fileTable : files) {
-            filesIterators.add(fileTable.decreasingIterator(from));
+            iterators.add(fileTable.decreasingIterator(from));
         }
 
-        filesIterators.add(memTable.decreasingIterator(from));
-        final Iterator<Cell> alive = getCellsIterator(filesIterators);
+        iterators.add(memTable.decreasingIterator(from));
+        final Iterator<Cell> alive = getCellsIterator(iterators);
         return Iterators.transform(alive, cell -> Record.of(cell.getKey(), cell.getValue().getData()));
     }
 }

@@ -5,7 +5,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.Iterator;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
 public class MemTable implements Table {
     private final NavigableMap<ByteBuffer, Value> map = new TreeMap<>();
