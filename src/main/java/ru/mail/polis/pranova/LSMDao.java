@@ -140,14 +140,14 @@ public final class LSMDao implements DAO {
         final List<Iterator<Cell>> filesIterators = new ArrayList<>();
 
         for (final FileTable fileTable : files) {
-            filesIterators.add(order == FileTable.Order.DIRECT ?
-                    fileTable.iterator(from) :
-                    fileTable.decreasingIterator(from));
+            filesIterators.add(order == FileTable.Order.DIRECT
+                    ? fileTable.iterator(from)
+                    : fileTable.decreasingIterator(from));
         }
 
-        filesIterators.add(order == FileTable.Order.DIRECT ?
-                memTable.iterator(from) :
-                memTable.decreasingIterator(from));
+        filesIterators.add(order == FileTable.Order.DIRECT
+                ? memTable.iterator(from)
+                : memTable.decreasingIterator(from));
         final Iterator<Cell> alive = getCellsIterator(filesIterators);
         return Iterators.transform(alive, cell -> Record.of(cell.getKey(), cell.getValue().getData()));
     }
